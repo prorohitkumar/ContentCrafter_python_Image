@@ -74,6 +74,6 @@ def chat():
         return jsonify({"message": "Internal Server Error"}), 500
 
 
-# Finally, we'll add the entrypoint for the file which runs the Flask development server.
-if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0")
+# # Finally, we'll add the entrypoint for the file which runs the Flask development server.
+# if __name__ == '__main__':
+#     app.run(debug=True, host="0.0.0.0")
