@@ -5,6 +5,12 @@ import google.generativeai as genai
 from flask_cors import CORS
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
+import logging
+
+# Configure the logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
+
 # Initializing the App and Gemini API: We initialize our Flask app and load the Gemini API client.
 working_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -40,23 +46,28 @@ model = genai.GenerativeModel(
 # Defining Routes: We define two routes - one for the home page and another for handling chat messages.
 @app.route('/', methods=['GET'])
 def hello_world():
-    return "Hii"
+    logging.info(f"Testing endPoint")
+    return "Hii, Have a great day"
 
 
 @app.route('/chat', methods=['POST'])
 def chat():
     if 'image' not in request.files:
+        logging.info(f"Image image file")
         return jsonify({"error": "Missing image file"})
 
     file = request.files['image']
     if file.filename == '':
+        logging.info(f"No selected file")
         return jsonify({"error": "No selected file"})
 
     if file.content_type not in ['image/jpeg', 'image/png']:
+        logging.info(f"Unsupported image format")
         return jsonify({"error": "Unsupported image format. Only JPEG and PNG allowed"})
 
     if file:
         image_data = file.read()
+        logging.info(f"Image file received for analysis and scripting {image_data}")
 
         # (Optional) Use Google Cloud Vision to analyze image content
 
@@ -81,10 +92,11 @@ def chat():
             return generated_text
         except Exception as e:
             if response.candidates[0].safety_ratings:
-                print("Safety Rating:")
+                logging.error(f"Exception caused due to safety rating")
                 for rating in response.candidates[0].safety_ratings:
                     print(f"{rating.category}: {rating.probability}")
             else:
+                logging.error(f"Error generating content: {e}")
                 print(f"Error generating content: {e}")
             return jsonify({"error": "internal server error"})
 
